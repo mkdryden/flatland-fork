@@ -53,3 +53,4 @@ deferred_module.shadow(
      },
     __version__='dev')
 '''
+__version__='fix-imports'
