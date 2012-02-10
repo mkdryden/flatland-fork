@@ -1,5 +1,5 @@
 """Schema components."""
-from .base import (
+from flatland.schema.base import (
     Element,
     Skip,
     SkipAll,
@@ -8,7 +8,7 @@ from .base import (
     Unevaluated,
     Unset,
     )
-from .scalars import (
+from flatland.schema.scalars import (
     Boolean,
     Constrained,
     Date,
@@ -24,7 +24,7 @@ from .scalars import (
     String,
     Time,
     )
-from .containers import (
+from flatland.schema.containers import (
     Array,
     Container,
     Dict,
@@ -34,14 +34,14 @@ from .containers import (
     Sequence,
     SparseDict,
     )
-from .compound import (
+from flatland.schema.compound import (
     Compound,
     DateYYYYMMDD,
     JoinedString,
     )
-from .forms import (
+from flatland.schema.forms import (
     Form,
     )
-from .properties import (
+from flatland.schema.properties import (
     Properties,
     )

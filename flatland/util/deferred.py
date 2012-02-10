@@ -13,8 +13,10 @@ class deferred_module(ModuleType):
         """Replace *module_name* in ``sys.modules`` with a deferred clone."""
         module = sys.modules[module_name]
         sys.modules[module_name] = cls(module, deferred, **attributes)
+        print '[deferred_module] shadow()'
 
     def __init__(self, module, deferred, **attributes):
+        print '[deferred_module] __init__()'
         ModuleType.__init__(self, module.__name__, module.__doc__ or None)
         self.__dict__.update(attributes)
         self.__shadowing = module

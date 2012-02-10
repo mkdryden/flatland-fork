@@ -1,6 +1,6 @@
 import re
 from flatland.util import re_ucompile
-from base import N_, Validator
+from flatland.validation.base import N_, Validator
 
 
 class NANPphone(Validator):

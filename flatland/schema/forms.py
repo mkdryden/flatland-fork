@@ -1,7 +1,7 @@
 # -*- coding: utf-8; fill-column: 78 -*-
 """Class attribute-style declarative schema construction."""
-from .base import Element
-from .containers import Dict
+from flatland.schema.base import Element
+from flatland.schema.containers import Dict
 
 
 __all__ = 'Form',

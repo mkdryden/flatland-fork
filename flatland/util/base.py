@@ -1,6 +1,6 @@
 # -*- coding: utf-8; fill-column: 78 -*-
 import re
-import string
+#import string
 import sys
 
 try:
@@ -196,7 +196,8 @@ def re_ucompile(pattern, flags=0):
     return re.compile(pattern, flags | re.UNICODE)
 
 
-_alphanum = set((string.digits + string.letters).decode('ascii'))
+#_alphanum = set((string.digits + string.letters).decode('ascii'))
+_alphanum = set(('0123456789' + 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ').decode('ascii'))
 
 
 def re_uescape(pattern):

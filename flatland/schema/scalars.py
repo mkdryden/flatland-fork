@@ -12,7 +12,7 @@ from flatland.util import (
     class_cloner,
     lazy_property,
     )
-from .base import Element
+from flatland.schema.base import Element
 
 
 __all__ = (

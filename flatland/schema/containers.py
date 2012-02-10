@@ -11,8 +11,8 @@ from flatland.util import (
     re_uescape,
     to_pairs,
     )
-from .base import Element, Unevaluated, Slot, validate_element
-from .scalars import Scalar
+from flatland.schema.base import Element, Unevaluated, Slot, validate_element
+from flatland.schema.scalars import Scalar
 
 
 __all__ = (

@@ -1,7 +1,7 @@
 from operator import attrgetter
 
 from flatland.util import Unspecified
-from .base import N_, Validator
+from flatland.validation.base import N_, Validator
 
 
 class Present(Validator):
