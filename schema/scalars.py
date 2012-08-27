@@ -409,6 +409,9 @@ class Constrained(Scalar):
     def serialize(self, value):
         return self.child_schema.serialize(value)
 
+    def validate_element(self, state, descending):
+        return self.valid_value(self, state)
+
 
 class Enum(Constrained):
     """A scalar type with a limited set of allowed values.
@@ -445,7 +448,6 @@ class Enum(Constrained):
     def valid_value(self, element, value):
         """True if *value* is within :attr:`valid_values`."""
         return value in self.valid_values
-
 
 class Temporal(Scalar):
     """Base for datetime-based date and time fields."""
