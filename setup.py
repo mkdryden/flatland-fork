@@ -19,12 +19,11 @@ except ImportError:
                 for w in os.walk('flatland')
                 if '__init__.py' in w[2]]
 
-import flatland
-version = flatland.__version__
+import version
 long_desc = open('README').read()
 
 setup(name="flatland",
-      version=version,
+      version=version.getVersion(),
       packages=find_packages(exclude=['tests.*', 'tests']),
       author='Jason Kirtland',
       author_email='jek@discorporate.us',
@@ -45,7 +44,5 @@ setup(name="flatland",
                    'Programming Language :: Python :: 2.7',
                    'Topic :: Internet :: WWW/HTTP :: WSGI',
                    'Topic :: Software Development :: Libraries'],
-      install_requires=[
-          'blinker',
-          ],
+      install_requires=['blinker'],
       **extra_setup)
