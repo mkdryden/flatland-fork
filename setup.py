@@ -22,7 +22,7 @@ except ImportError:
 import version
 long_desc = open('README').read()
 
-setup(name="flatland",
+setup(name="flatland-fork",
       version=version.getVersion(),
       packages=find_packages(exclude=['tests.*', 'tests']),
       author='Jason Kirtland',
