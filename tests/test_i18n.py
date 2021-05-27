@@ -12,21 +12,21 @@ class GetTextish(object):
     """Mimics a gettext translation."""
 
     catalog = {
-        u'%(label)s is not correct.':
-            u'reg %(label)s',
+        '%(label)s is not correct.':
+            'reg %(label)s',
 
-        u'%(label)s may not exceed %(maxlength)s characters.':
-            u'default %(label)s %(maxlength)s',
+        '%(label)s may not exceed %(maxlength)s characters.':
+            'default %(label)s %(maxlength)s',
 
-        u'%(label)s max is %(maxlength)s characters.':
-            u'plural %(label)s %(maxlength)s',
+        '%(label)s max is %(maxlength)s characters.':
+            'plural %(label)s %(maxlength)s',
 
-        u'%(label)s max is %(maxlength)s character.':
-            u'single %(label)s %(maxlength)s',
+        '%(label)s max is %(maxlength)s character.':
+            'single %(label)s %(maxlength)s',
 
-        u'age': u'AGE',
+        'age': 'AGE',
 
-        u'name': u'NAME',
+        'name': 'NAME',
         }
 
     def ugettext(self, text):
@@ -41,8 +41,8 @@ class GetTextish(object):
 
 
 class LocalizedShort(NoLongerThan):
-    exceeded = (u'%(label)s max is %(maxlength)s character.',
-                u'%(label)s max is %(maxlength)s characters.',
+    exceeded = ('%(label)s max is %(maxlength)s character.',
+                '%(label)s max is %(maxlength)s characters.',
                 'maxlength')
 
 
@@ -56,7 +56,7 @@ def test_regular_gettext():
 
     data = schema()
     data.validate()
-    assert data['age'].errors == [u'reg AGE']
+    assert data['age'].errors == ['reg AGE']
 
 
 def test_local_gettext():
@@ -69,7 +69,7 @@ def test_local_gettext():
 
     data = schema()
     data.validate()
-    assert data['age'].errors == [u'reg AGE']
+    assert data['age'].errors == ['reg AGE']
 
 
 def test_local_gettext_search_is_not_overeager():
@@ -88,7 +88,7 @@ def test_local_gettext_search_is_not_overeager():
 
     data = schema()
     data.validate()
-    assert data['age'].errors == [u'reg AGE']
+    assert data['age'].errors == ['reg AGE']
 
 
 def test_builtin_gettext():
@@ -100,14 +100,14 @@ def test_builtin_gettext():
 
     try:
         # translators can go into the builtins
-        import __builtin__
-        __builtin__.ugettext = catalog.ugettext
-        __builtin__.ungettext = catalog.ungettext
+        import builtins
+        builtins.ugettext = catalog.ugettext
+        builtins.ungettext = catalog.ungettext
         data.validate()
-        assert data['age'].errors == [u'reg AGE']
+        assert data['age'].errors == ['reg AGE']
     finally:
-        del __builtin__.ugettext
-        del __builtin__.ungettext
+        del builtins.ugettext
+        del builtins.ungettext
 
 
 def test_state_gettext():
@@ -118,13 +118,13 @@ def test_state_gettext():
     # if state has ugettext or ungettext attributes, those will be used
     data = schema()
     data.validate(catalog)
-    assert data['age'].errors == [u'reg AGE']
+    assert data['age'].errors == ['reg AGE']
 
     # also works if state is dict-like
     data = schema()
     state = dict(ugettext=catalog.ugettext, ungettext=catalog.ungettext)
     data.validate(state)
-    assert data['age'].errors == [u'reg AGE']
+    assert data['age'].errors == ['reg AGE']
 
 
 def test_tuple_single():
@@ -134,7 +134,7 @@ def test_tuple_single():
 
     data = schema(dict(name='xxx'))
     data.validate(catalog)
-    assert data['name'].errors == [u'single NAME 1']
+    assert data['name'].errors == ['single NAME 1']
 
 
 def test_tuple_plural():
@@ -144,4 +144,4 @@ def test_tuple_plural():
 
     data = schema(dict(name='xxx'))
     data.validate(catalog)
-    assert data['name'].errors == [u'plural NAME 2']
+    assert data['name'].errors == ['plural NAME 2']

@@ -30,21 +30,21 @@ def assert_email_valid(value, kw={}):
 
 
 def test_email():
-    for addr in (u'bob@noob.com', u'bob@noob.frizbit', u'#"$!+,,@noob.c',
-                 u'bob@bob-bob.bob'):
+    for addr in ('bob@noob.com', 'bob@noob.frizbit', '#"$!+,,@noob.c',
+                 'bob@bob-bob.bob'):
         yield assert_email_valid, addr
 
 
 def test_email_idna():
-    assert_email_valid(u'bob@snow\u2603man.com')
+    assert_email_valid('bob@snow\u2603man.com')
 
 
 def test_email_nonlocal():
-    assert_email_not_valid(u'root@localhost')
+    assert_email_not_valid('root@localhost')
 
 
 def test_email_nonlocal_ok():
-    assert_email_valid(u'root@localhost', {'nonlocal': False})
+    assert_email_valid('root@localhost', {'nonlocal': False})
 
 
 def test_email_altlocal():
@@ -54,14 +54,14 @@ def test_email_altlocal():
 
 
 def test_email_bogus():
-    c64 = u'x' * 64
-    c63 = u'x' * 63
-    for addr in (u'bob@zig..', u'bob@', u'@bob.com', u'@', u'snork',
-                 u'bob@zig:zag.com', u'bob@zig zag.com', u'bob@zig/zag.com',
-                 u' @zig.com', u'\t\t@zag.com',
-                 u'bob@%s.com' % c64,
-                 u'bob@%s.%s.%s.%s.com' % (c63, c63, c63, c63),
-                 u'foo.com', u'bob@bob_bob.com', u''):
+    c64 = 'x' * 64
+    c63 = 'x' * 63
+    for addr in ('bob@zig..', 'bob@', '@bob.com', '@', 'snork',
+                 'bob@zig:zag.com', 'bob@zig zag.com', 'bob@zig/zag.com',
+                 ' @zig.com', '\t\t@zag.com',
+                 'bob@%s.com' % c64,
+                 'bob@%s.%s.%s.%s.com' % (c63, c63, c63, c63),
+                 'foo.com', 'bob@bob_bob.com', ''):
         yield assert_email_not_valid, addr
 
 

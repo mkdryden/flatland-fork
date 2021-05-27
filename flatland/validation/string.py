@@ -4,14 +4,14 @@ from flatland.validation.base import N_, Validator
 
 
 class NANPphone(Validator):
-    invalid = N_(u'The %(label)s is not valid.')
+    invalid = N_('The %(label)s is not valid.')
 
-    noext = N_(u'%(label)s must be a ten-digit phone number '
-               u'without extension.')
+    noext = N_('%(label)s must be a ten-digit phone number '
+               'without extension.')
 
-    re_cleaner = re_ucompile(ur'\D')
+    re_cleaner = re_ucompile(r'\D')
     re_lowbit = re.compile('^[0-9]+$')
-    fmt_line = u'(%03i) %03i-%04i'
+    fmt_line = '(%03i) %03i-%04i'
     fmt_ext = fmt_line + ' x%i'
 
     def __init__(self, extensions=False, **kw):
@@ -22,12 +22,12 @@ class NANPphone(Validator):
         value = element.u if element.value is None else element.value
         value = self.re_cleaner.sub('', value)
 
-        if value == u'':
+        if value == '':
             return self.note_error(element, state, 'invalid')
 
         if not self.re_lowbit.match(value):
             # Translate to single-byte numbers.
-            value = unicode(str(long(value)))
+            value = str(str(int(value)))
 
         if len(value) < 10:
             return self.note_error(element, state, 'invalid')

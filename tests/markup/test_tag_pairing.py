@@ -8,7 +8,7 @@ def simple_schema():
         valued = String
         empty = String
 
-    return SmallForm({u'valued': u'val'})
+    return SmallForm({'valued': 'val'})
 
 ###
 

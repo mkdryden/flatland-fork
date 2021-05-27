@@ -2,7 +2,7 @@ import os
 import sys
 
 if sys.version_info < (2, 5):
-    print "Python 2.5 or higher is required."
+    print("Python 2.5 or higher is required.")
     sys.exit(1)
 
 try:

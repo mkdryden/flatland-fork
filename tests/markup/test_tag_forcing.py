@@ -3,7 +3,7 @@ from flatland import String
 from tests.markup._util import desired_output
 
 
-schema = String.named(u'element').using(default=u'val').from_defaults
+schema = String.named('element').using(default='val').from_defaults
 
 ### value
 

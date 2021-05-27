@@ -35,8 +35,8 @@ _unescape_re = re.compile(r"\\(/|\[|\]|\.)")
 
 
 def pathexpr(expr):
-    if not isinstance(expr, unicode):
-        expr = unicode(expr)
+    if not isinstance(expr, str):
+        expr = str(expr)
     try:
         return expression_cache[expr]
     except KeyError:
@@ -58,7 +58,7 @@ class PathExpression(object):
         contexts = [(self.ops, element)]
 
         for _ops, el in contexts:
-            for idx in xrange(len(_ops)):
+            for idx in range(len(_ops)):
                 op, data = _ops[idx]
                 if op is TOP:
                     el = el.root

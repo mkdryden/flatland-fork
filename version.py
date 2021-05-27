@@ -68,7 +68,7 @@ def readGitVersion():
         data, _ = proc.communicate()
         if proc.returncode:
             return None
-        ver = data.splitlines()[0].strip()
+        ver = data.splitlines()[0].strip().decode('utf-8')
     except:
         return None
 
@@ -116,8 +116,8 @@ def getVersion():
         raise ValueError('Cannot find the version number')
     if version != release_version:
         writeReleaseVersion(version)
-    return version
+    return str(version)
 
 
 if __name__ == '__main__':
-    print getVersion()
+    print(getVersion())

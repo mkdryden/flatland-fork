@@ -390,7 +390,7 @@ class Sequence(Container, list):
 
     @property
     def u(self):
-        return u'[%s]' % u', '.join(
+        return '[%s]' % ', '.join(
             element.u if isinstance(element, Container)
                       else repr(element.u).decode('raw_unicode_escape')
             for element in self.children)
@@ -549,23 +549,23 @@ class List(Sequence):
             return
 
         if self.name:
-            regex = re.compile(ur'^%s(\d+)(?:%s|$)' % (
+            regex = re.compile(r'^%s(\d+)(?:%s|$)' % (
                 re_uescape(self.name + sep), re_uescape(sep)), re.UNICODE)
         else:
-            regex = re.compile(ur'^(\d+)(?:%s|$)' % (
+            regex = re.compile(r'^(\d+)(?:%s|$)' % (
                 re_uescape(sep)), re.UNICODE)
 
         indexes = defaultdict(list)
         prune = self.prune_empty
 
         for key, value in pairs:
-            if value == u'' and prune:
+            if value == '' and prune:
                 continue
             m = regex.match(key)
             if not m:
                 continue
             try:
-                index = long(m.group(1))
+                index = int(m.group(1))
             except TypeError:
                 # Ignore keys with outrageously large indexes- they
                 # aren't valid data for us.
@@ -590,7 +590,7 @@ class List(Sequence):
         #           schema-configured maximum. flat + python indexes match.
         else:
             max_index = min(max(indexes) + 1, self.maximum_set_flat_members)
-            for index in xrange(0, max_index):
+            for index in range(0, max_index):
                 slot = self._new_slot()
                 list.append(self, slot)
                 flat = indexes.get(index, None)
@@ -617,7 +617,7 @@ class List(Sequence):
 
         del self[:]
         if isinstance(default, int):
-            for _ in xrange(0, default):
+            for _ in range(0, default):
                 slot = self._new_slot()
                 list.append(self, slot)
                 slot.element.set_default()
@@ -652,18 +652,18 @@ class Array(Sequence):
                "Flattened Arrays are only supported for scalar child types."
 
         if not self.name:
-            child_prefix = child_name or u''
+            child_prefix = child_name or ''
             for key, value in pairs:
-                if prune and value == u'' and key == child_prefix:
+                if prune and value == '' and key == child_prefix:
                     continue
-                if key == u'':
+                if key == '':
                     key = None
                 if child_name and key != child_name:
                     continue
                 member = self.member_schema.from_flat([(key, value)])
                 self.append(member)
         else:
-            regex = re.compile(ur'^(%s(?:%s|$))' % (
+            regex = re.compile(r'^(%s(?:%s|$))' % (
                 re_uescape(self.name), re_uescape(sep)), re.UNICODE)
             for key, value in pairs:
                 m = regex.match(key)
@@ -672,7 +672,7 @@ class Array(Sequence):
                 remainder = key[m.end():] or None
                 if child_name and not remainder:
                     continue
-                elif prune and value == u'' and remainder == child_name:
+                elif prune and value == '' and remainder == child_name:
                     continue
                 member = self.member_schema.from_flat([(remainder, value)])
                 self.append(member)
@@ -696,7 +696,7 @@ class MultiValue(Array, Scalar):
     def u(self):
         """The .u of the first item in the sequence, or u''."""
         if not self:
-            return u''
+            return ''
         else:
             return self[0].u
 
@@ -723,7 +723,7 @@ class MultiValue(Array, Scalar):
     value = property(value, _set_value)
     del _set_value
 
-    def __nonzero__(self):
+    def __bool__(self):
         # this is a little troubling, given that it may not match the
         # appearance of the element in a scalar context.
         return len(self)
@@ -786,7 +786,7 @@ class Mapping(Container, dict):
         elif dictish:
             for key, value in to_pairs(dictish[0]):
                 self[key] = value
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             self[key] = value
 
     def setdefault(self, key, default=None):
@@ -804,7 +804,7 @@ class Mapping(Container, dict):
     @property
     def children(self):
         # order not guaranteed
-        return self.itervalues()
+        return iter(self.values())
 
     def set(self, value):
         """TODO: doc set()"""
@@ -821,7 +821,7 @@ class Mapping(Container, dict):
                         type(self).__name__, self.name, key))
             converted &= self[key].set(value)
             seen.add(key)
-        required = set(self.iterkeys())
+        required = set(self.keys())
         if seen != required:
             missing = required - seen
             raise TypeError(
@@ -876,15 +876,15 @@ class Mapping(Container, dict):
         """A string repr of the element."""
         pairs = ((key, value.u if isinstance(value, Container)
                                else repr(value.u).decode('raw_unicode_escape'))
-                  for key, value in self.iteritems())
-        return u'{%s}' % u', '.join(
-            u"%s: %s" % (repr(k).decode('raw_unicode_escape'), v)
+                  for key, value in self.items())
+        return '{%s}' % ', '.join(
+            "%s: %s" % (repr(k).decode('raw_unicode_escape'), v)
             for k, v in pairs)
 
     @property
     def value(self):
         """The element as a regular Python dictionary."""
-        return dict((key, value.value) for key, value in self.iteritems())
+        return dict((key, value.value) for key, value in self.items())
 
     @property
     def is_empty(self):
@@ -999,7 +999,7 @@ class Dict(Mapping, dict):
             seen.add(key)
 
         if policy == 'strict':
-            required = set(fields.iterkeys())
+            required = set(fields.keys())
             if seen != required:
                 missing = required - seen
                 raise TypeError(
@@ -1065,7 +1065,7 @@ class Dict(Mapping, dict):
           >>> new_user = User(**user_keywords)
 
         """
-        fields = set(self.iterkeys())
+        fields = set(self.keys())
         attributes = fields.copy()
         if rename:
             rename = list(to_pairs(rename))
@@ -1098,14 +1098,14 @@ class Dict(Mapping, dict):
 
         """
         data = self.slice(include=include, omit=omit, rename=rename, key=key)
-        for attribute, value in data.iteritems():
+        for attribute, value in data.items():
             setattr(obj, attribute, value)
 
     def slice(self, include=None, omit=None, rename=None, key=None):
         """Return a ``dict`` containing a subset of the element's values."""
         return dict(
             keyslice_pairs(
-                ((key, element.value) for key, element in self.iteritems()),
+                ((key, element.value) for key, element in self.items()),
                 include=include, omit=omit, rename=rename, key=key))
 
 
@@ -1214,7 +1214,7 @@ class SparseDict(Dict):
 
     @property
     def is_empty(self):
-        for _ in self.iterkeys():
+        for _ in self.keys():
             return False
         return True
 

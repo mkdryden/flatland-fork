@@ -6,7 +6,7 @@ from tests.markup._util import render_genshi as render, need
 
 
 TemplateSyntaxError = None
-schema = String.named('element').using(default=u'val')
+schema = String.named('element').using(default='val')
 
 
 @need('genshi')
@@ -23,19 +23,19 @@ def test_version_sensor():
 
 def test_bogus_tags():
     for snippet in [
-        u'<form:auto-name/>',
-        u'<form:auto-value/>',
-        u'<form:auto-domid/>',
-        u'<form:auto-for/>',
-        u'<form:auto-tabindex/>',
+        '<form:auto-name/>',
+        '<form:auto-value/>',
+        '<form:auto-domid/>',
+        '<form:auto-for/>',
+        '<form:auto-tabindex/>',
         ]:
         assert_raises(TemplateSyntaxError, render, snippet, 'xml', schema)
 
 
 def test_bogus_elements():
     for snippet in [
-        u'<div form:with="snacks" />',
-        u'<div form:set="snacks" />',
+        '<div form:with="snacks" />',
+        '<div form:set="snacks" />',
         ]:
         assert_raises(TemplateSyntaxError, render, snippet, 'xml', schema)
 
@@ -72,12 +72,12 @@ def test_attribute_interpolation():
 <input type="checkbox" value="val" name="element" checked="checked" />"""
 
     rendered = render(markup, 'xhtml', schema.from_defaults,
-                      ON=u'on',
-                      N=u'n',
-                      VAL=Markup(u'val'),
-                      V=u'v',
-                      A=u'a',
-                      L=u'l',
+                      ON='on',
+                      N='n',
+                      VAL=Markup('val'),
+                      V='v',
+                      A='a',
+                      L='l',
                       )
     assert rendered == expected
 
@@ -183,10 +183,10 @@ def test_tortured_select():
   </option>
 </select>"""
 
-    factory = schema.using(default=u'hit').from_defaults
+    factory = schema.using(default='hit').from_defaults
     rendered = render(markup, 'xhtml', factory)
     if rendered != expected:
-        print "\n" + __name__
-        print "Expected:\n" + expected
-        print "Got:\n" + rendered
+        print("\n" + __name__)
+        print("Expected:\n" + expected)
+        print("Got:\n" + rendered)
     assert rendered == expected

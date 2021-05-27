@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 from collections import deque
 
 from genshi.core import Namespace, QName, END, START, TEXT
@@ -19,14 +19,14 @@ from flatland.out.generic import _unpack, transform, Context
 
 __all__ = ('setup',)
 
-NS = Namespace(u'http://ns.discorporate.us/flatland/genshi')
+NS = Namespace('http://ns.discorporate.us/flatland/genshi')
 
-_static_attribute_order = [u'type', u'name', u'value']
+_static_attribute_order = ['type', 'name', 'value']
 
 _to_context = {}
-for key in (u'auto-name', u'auto-value', u'auto-domid', u'auto-for',
-            u'auto-tabindex', u'auto-filter', u'domid-format'):
-    _to_context[key] = key.replace(u'-', u'_')
+for key in ('auto-name', 'auto-value', 'auto-domid', 'auto-for',
+            'auto-tabindex', 'auto-filter', 'domid-format'):
+    _to_context[key] = key.replace('-', '_')
 
 _bind_qname = NS.bind
 
@@ -107,7 +107,7 @@ class ControlAttribute(AttributeOnly):
         # allow interpolation inside control attributes
         raw_value = list(interpolate(value, lineno=lineno, offset=offset))
         if all(kind is TEXT for (kind, _, _) in raw_value):
-            self.raw_value = u''.join(event[1] for event in raw_value)
+            self.raw_value = ''.join(event[1] for event in raw_value)
         else:
             self.raw_value = raw_value
 
@@ -122,7 +122,7 @@ class ControlAttribute(AttributeOnly):
     def inject(self, mapping, ctxt, vars):
         """Inject the translated key and interpolated value into *mapping*."""
         raw = self.raw_value
-        if raw.__class__ is unicode:
+        if raw.__class__ is str:
             final_value = raw
         else:
             parts = []
@@ -131,8 +131,8 @@ class ControlAttribute(AttributeOnly):
                     parts.append(value)
                 else:
                     value = _eval_expr(value, ctxt, vars)
-                    parts.append(unicode(value))
-            final_value = u''.join(parts)
+                    parts.append(str(value))
+            final_value = ''.join(parts)
         mapping[_to_context.get(self._name, self._name)] = final_value
 
 
@@ -192,9 +192,9 @@ class RenderContextManipulator(TagOnly):
     def __init__(self, attributes, template=None, namespaces=None,
                  lineno=-1, offset=-1):
         transformed = {}
-        for key, value in attributes.items():
+        for key, value in list(attributes.items()):
             key = _to_context.get(key, key)
-            if key == u'tabindex':
+            if key == 'tabindex':
                 value = int(value)
             transformed[key] = value
         TagOnly.__init__(self, transformed, template, namespaces,
@@ -273,7 +273,7 @@ def _rewrite_stream(stream, directives, ctxt, vars, bind):
     existing_attributes = {}
     for qname, value in attrs:
         if qname.namespace is None:
-            if not isinstance(value, unicode):
+            if not isinstance(value, str):
                 value = _simplify_stream(value, ctxt, vars)
                 attrs |= ((qname, value),)
             existing_attributes[qname.localname] = qname
@@ -289,21 +289,21 @@ def _rewrite_stream(stream, directives, ctxt, vars, bind):
 
     if new_contents is None:
         new_contents = ()
-    elif isinstance(new_contents, unicode):
+    elif isinstance(new_contents, str):
         new_contents = [(TEXT, new_contents, (None, -1, -1))]
 
-    pairs = sorted(mutable_attrs.iteritems(), key=_attribute_sort_key)
+    pairs = sorted(iter(mutable_attrs.items()), key=_attribute_sort_key)
     for attribute_name, value in pairs:
         if attribute_name in existing_attributes:
             qname = existing_attributes.pop(attribute_name)
         else:
             qname = QName(attribute_name)
         attrs |= ((qname, value),)
-    for qname in existing_attributes.values():
+    for qname in list(existing_attributes.values()):
         attrs -= qname
 
     stream[0] = (kind, (tagname, attrs), pos)
-    if new_contents and tagname.localname == u'select' and bind is not None:
+    if new_contents and tagname.localname == 'select' and bind is not None:
         if tagname.namespace:
             sub_tag = Namespace(tagname.namespace).option
         else:  # pragma: nocover
@@ -351,7 +351,7 @@ def _bind_unbound_tags(stream, qname, bind):
                 _bind_unbound_tags(substream, qname, bind))
             # attaching the directive is sufficient; don't need to fabricate
             # a form:bind="" attribute
-            yield SUB, ([Binding(u'', bind=bind)], substream), pos
+            yield SUB, ([Binding('', bind=bind)], substream), pos
         else:
             yield kind, data, pos
 
@@ -370,13 +370,13 @@ def _simplify_stream(stream, ctxt, vars):
                 while hasattr(value, '__next__') or hasattr(value, 'next'):
                     value = list(value)
                     value = _simplify_stream(value, ctxt, vars)
-                if not isinstance(value, unicode):
+                if not isinstance(value, str):
                     stream[idx:idx + 1] = value
                 else:
                     stream[idx] = (TEXT, value, pos)
-            elif not isinstance(value, unicode):
-                value = unicode(value)
+            elif not isinstance(value, str):
+                value = str(value)
             parts.append(value)
         else:
             return stream
-    return u''.join(parts)
+    return ''.join(parts)

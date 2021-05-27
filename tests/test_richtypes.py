@@ -32,7 +32,7 @@ def test_simple():
 
     data = Schema({'num': '4100000000000001'})
     assert data.validate()
-    assert isinstance(data['num'].value, long)
+    assert isinstance(data['num'].value, int)
     assert data['num'].u == '4100-0000-0000-0001'
 
 
@@ -41,7 +41,7 @@ def test_subclass():
     class MyCreditCard(CreditCardNumber):
 
         class Present(CreditCardNumber.Present):
-            missing = u'Yo! You need a %(label)s!'
+            missing = 'Yo! You need a %(label)s!'
 
     class Schema(Form):
         num = MyCreditCard.using(label='Visa/MC Number',

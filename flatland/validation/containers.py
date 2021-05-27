@@ -77,7 +77,7 @@ class NotDuplicated(Validator):
     """
 
     # TRANSLATORS: NotDuplicated.failure
-    failure = N_(u'%(label)s may not be repeated within %(container_label)s.')
+    failure = N_('%(label)s may not be repeated within %(container_label)s.')
 
     comparator = operator.eq
 

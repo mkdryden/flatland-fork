@@ -5,6 +5,7 @@ from flatland.exc import AdaptationError
 from flatland.util import Unspecified, threading
 from .containers import Array, Mapping
 from .scalars import Date, Integer, Scalar, String
+from functools import reduce
 
 
 class _MetaCompound(type):
@@ -25,7 +26,7 @@ class _MetaCompound(type):
         # Find **kw that would override existing class properties and
         # remove them from kw.
         overrides = {}
-        for key in kw.keys():
+        for key in list(kw.keys()):
             if hasattr(cls, key):
                 overrides[key] = kw.pop(key)
 
@@ -59,7 +60,7 @@ class _MetaCompound(type):
 def _wrap_compound_init(fn):
     """Decorate __compound_init__ with a status setter & classmethod."""
     if isinstance(fn, classmethod):
-        fn = fn.__get__(str).im_func  # type doesn't matter here
+        fn = fn.__get__(str).__func__  # type doesn't matter here
     def __compound_init__(cls):
         res = fn(cls)
         cls._compound_prepared = True
@@ -68,7 +69,7 @@ def _wrap_compound_init(fn):
     return classmethod(__compound_init__)
 
 
-class Compound(Mapping, Scalar):
+class Compound(Mapping, Scalar, metaclass=_MetaCompound):
     """A mapping container that acts like a scalar value.
 
     Compound fields are dictionary-like fields that can assemble a
@@ -90,8 +91,6 @@ class Compound(Mapping, Scalar):
     Composites run validation after their children.
 
     """
-
-    __metaclass__ = _MetaCompound
 
     def __compound_init__(cls):
         """TODO: doc
@@ -178,7 +177,7 @@ class Compound(Mapping, Scalar):
     def __repr__(self):
         try:
             return Scalar.__repr__(self)
-        except Exception, exc:
+        except Exception as exc:
             return '<%s %r; value raised %s>' % (
                 type(self).__name__, self.name, type(exc).__name__)
 
@@ -200,13 +199,13 @@ class DateYYYYMMDD(Compound, Date):
         optional = cls.optional
 
         if len(fields) == 0:
-            fields.append(Integer.named(u'year').using(format=u'%04i',
+            fields.append(Integer.named('year').using(format='%04i',
                                                        optional=optional))
         if len(fields) == 1:
-            fields.append(Integer.named(u'month').using(format=u'%02i',
+            fields.append(Integer.named('month').using(format='%02i',
                                                         optional=optional))
         if len(fields) == 2:
-            fields.append(Integer.named(u'day').using(format=u'%02i',
+            fields.append(Integer.named('day').using(format='%02i',
                                                       optional=optional))
 
         cls.field_schema = fields
@@ -225,7 +224,7 @@ class DateYYYYMMDD(Compound, Date):
 
             return as_str, value
         except (AdaptationError, TypeError):
-            return u'', None
+            return '', None
 
     def explode(self, value):
         try:
@@ -263,7 +262,7 @@ class JoinedString(Array, String):
     #: The string used to join children's :attr:`u` representations.  Will
     #: also be used to split incoming strings, unless :attr:`separator_regex`
     #: is also defined.
-    separator = u','
+    separator = ','
 
     #: Optional, a regular expression, used preferentially to split an
     #: incoming separated value into components.  Used in combination with
@@ -291,7 +290,7 @@ class JoinedString(Array, String):
     def set(self, value):
         if isinstance(value, (list, tuple)):
             values = value
-        elif not isinstance(value, basestring):
+        elif not isinstance(value, str):
             values = list(value)
         elif self.separator_regex:
             # a basestring, regexp separator

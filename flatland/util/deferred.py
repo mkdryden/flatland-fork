@@ -13,10 +13,10 @@ class deferred_module(ModuleType):
         """Replace *module_name* in ``sys.modules`` with a deferred clone."""
         module = sys.modules[module_name]
         sys.modules[module_name] = cls(module, deferred, **attributes)
-        print '[deferred_module] shadow()'
+        print('[deferred_module] shadow()')
 
     def __init__(self, module, deferred, **attributes):
-        print '[deferred_module] __init__()'
+        print('[deferred_module] __init__()')
         ModuleType.__init__(self, module.__name__, module.__doc__ or None)
         self.__dict__.update(attributes)
         self.__shadowing = module
@@ -25,7 +25,7 @@ class deferred_module(ModuleType):
         self.__file__ = module.__file__
         self.__path__ = module.__path__
 
-        for submodule, pushed_up in deferred.iteritems():
+        for submodule, pushed_up in deferred.items():
             self.__all__.append(submodule)
             if pushed_up:
                 for member in pushed_up:
@@ -51,5 +51,5 @@ class deferred_module(ModuleType):
                     'module %r has no attribute %r' % (self.__name__, key))
 
     def __dir__(self):
-        pool = sorted(set(self.__all__).union(self.__dict__.keys()))
+        pool = sorted(set(self.__all__).union(list(self.__dict__.keys())))
         return [key for key in pool if not key.startswith('_deferred_module')]

@@ -10,7 +10,7 @@ from tests._util import assert_raises, eq_, requires_unicode_coercion
 
 
 def test_cloning():
-    new_element = Element.named(u'x')
+    new_element = Element.named('x')
     assert isinstance(new_element, type)
     assert new_element.__module__ != Element.__module__
     assert 'test_base' in new_element.__module__
@@ -18,15 +18,15 @@ def test_cloning():
 
 @requires_unicode_coercion
 def test_naming():
-    for arg in (u'unicode', 'sysencoding', None):
+    for arg in ('unicode', 'sysencoding', None):
         schema = Element.named(arg)
         eq_(schema.name, arg)
         eq_(schema.label, arg)
 
-    for arg in (u'unicode', 'sysencoding', None):
-        schema = Element.named(arg).using(label=u'fleem')
+    for arg in ('unicode', 'sysencoding', None):
+        schema = Element.named(arg).using(label='fleem')
         eq_(schema.name, arg)
-        eq_(schema.label, u'fleem')
+        eq_(schema.label, 'fleem')
 
 
 def test_validators():
@@ -38,11 +38,11 @@ def test_validators():
     el = Element(validators=(123, 456))
     eq_(el.validators, [123, 456])
 
-    el = Element(validators=xrange(3))
-    eq_(el.validators, list(xrange(3)))
+    el = Element(validators=range(3))
+    eq_(el.validators, list(range(3)))
 
-    schema = Element.using(validators=xrange(3))
-    eq_(schema.validators, list(xrange(3)))
+    schema = Element.using(validators=range(3))
+    eq_(schema.validators, list(range(3)))
 
 
 def test_dsl_validated_by():
@@ -92,13 +92,13 @@ def test_optional():
 
 def test_label():
     # .label fallback to .name works for instances and classes
-    for item in Element.named(u'x'), Element.named(u'x')(), Element(name=u'x'):
-        assert item.label == u'x'
+    for item in Element.named('x'), Element.named('x')(), Element(name='x'):
+        assert item.label == 'x'
 
-    for item in (Element.using(name=u'x', label=u'L'),
-                 Element.using(name=u'x', label=u'L')(),
-                 Element(name=u'x', label=u'L')):
-        assert item.label == u'L'
+    for item in (Element.using(name='x', label='L'),
+                 Element.using(name='x', label='L')(),
+                 Element(name='x', label='L')):
+        assert item.label == 'L'
 
 
 def test_instance_defaults():
@@ -117,9 +117,9 @@ def test_instance_defaults():
     eq_(tuple(_.name for _ in el.path), (None,))
     eq_(el.parent, None)
     eq_(el.root, el)
-    eq_(el.flattened_name(), u'')
+    eq_(el.flattened_name(), '')
     eq_(el.value, None)
-    eq_(el.u, u'')
+    eq_(el.u, '')
 
 
 def test_abstract():
@@ -127,7 +127,7 @@ def test_abstract():
 
     assert_raises(NotImplementedError, element.set, None)
     assert_raises(NotImplementedError, element.set_flat, ())
-    assert_raises(NotImplementedError, element.el, u'foo')
+    assert_raises(NotImplementedError, element.el, 'foo')
 
 
 def test_message_buckets():
@@ -193,7 +193,7 @@ def test_validator_return():
         def __init__(self, val):
             self.val = val
 
-        def __nonzero__(self):
+        def __bool__(self):
             return bool(self.val)
 
     Validatable = Element.using(validates_down='validators')

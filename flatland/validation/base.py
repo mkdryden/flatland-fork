@@ -20,7 +20,7 @@ class Validator(object):
 
         """
         cls = type(self)
-        for attr, value in kw.iteritems():
+        for attr, value in kw.items():
             if hasattr(cls, attr):
                 setattr(self, attr, value)
             else:

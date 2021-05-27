@@ -12,19 +12,19 @@ class DictLike(object):
         raise NotImplementedError
 
     def items(self):
-        return list(self.iteritems())
+        return list(self.items())
 
     def iterkeys(self):
-        return (item[0] for item in self.iteritems())
+        return (item[0] for item in self.items())
 
     def keys(self):
-        return list(self.iterkeys())
+        return list(self.keys())
 
     def itervalues(self):
-        return (item[1] for item in self.iteritems())
+        return (item[1] for item in self.items())
 
     def values(self):
-        return list(self.itervalues())
+        return list(self.values())
 
     def get(self, key, default=None):
         try:
@@ -33,15 +33,15 @@ class DictLike(object):
             return default
 
     def copy(self):
-        return dict(self.iteritems())
+        return dict(iter(self.items()))
 
     def popitem(self):
         raise NotImplementedError
 
     def __contains__(self, key):
-        return key in self.iterkeys()
+        return key in iter(self.keys())
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.copy())
 
     def __eq__(self, other):
@@ -83,7 +83,7 @@ class _TypeLookup(DictLike):
 
     def clear(self):
         frame = self._base_frame
-        for key in self.iterkeys():
+        for key in self.keys():
             frame[key] = Deleted
 
     def pop(self, key, *default):
@@ -106,7 +106,7 @@ class _TypeLookup(DictLike):
     def iteritems(self):
         seen = set()
         for frame in self._frames():
-            for key, value in frame.iteritems():
+            for key, value in frame.items():
                 if key not in seen:
                     seen.add(key)
                     if value is not Deleted:
@@ -174,7 +174,7 @@ class _InstanceLookup(DictLike):
 
     def clear(self):
         self.local.clear()
-        for key in self.class_lookup.keys():
+        for key in list(self.class_lookup.keys()):
             self.local[key] = Deleted
 
     def pop(self, key, *default):
@@ -195,11 +195,11 @@ class _InstanceLookup(DictLike):
 
     def iteritems(self):
         seen = set()
-        for key, value in self.local.iteritems():
+        for key, value in self.local.items():
             seen.add(key)
             if value is not Deleted:
                 yield key, value
-        for key, value in self.class_lookup.iteritems():
+        for key, value in self.class_lookup.items():
             if key not in seen:
                 seen.add(key)
                 if value is not Deleted:  # pragma: nocover  (coverage bug)

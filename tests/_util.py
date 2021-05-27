@@ -5,6 +5,7 @@ from inspect import stack
 import sys
 
 from nose.tools import eq_, assert_raises, raises
+import importlib
 
 
 __all__ = ['asciistr', 'assert_raises', 'eq_', 'raises', 'fails',
@@ -35,9 +36,9 @@ def fails(reason):
 
 def udict(*dictionary, **kwargs):
     "Return a dict with unicode keys. A stand-in for the dict constructor."
-    kwargs = dict((k.decode('ascii'), v) for k, v in kwargs.items())
+    kwargs = dict((k.decode('ascii'), v) for k, v in list(kwargs.items()))
     if dictionary:
-        base = dict((k.decode('ascii'), v) for k, v in dictionary[0].items())
+        base = dict((k.decode('ascii'), v) for k, v in list(dictionary[0].items()))
         base.update(kwargs)
         return base
     else:
@@ -65,7 +66,7 @@ def requires_unicode_coercion(fn):
 
 def _allowed_coercion(input):
     global genshis
-    if isinstance(input, (int, float, long, type(None))):
+    if isinstance(input, (int, float, type(None))):
         return True
     calling_file = stack()[2][1]
     if calling_file.endswith('sre_parse.py'):
@@ -124,5 +125,5 @@ def enable_coercion_blocker():
         streamreader=_StreamReader,
         )
     codecs.register(registration)
-    reload(sys)
+    importlib.reload(sys)
     sys.setdefaultencoding("nocoercion")

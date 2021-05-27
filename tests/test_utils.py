@@ -68,7 +68,7 @@ def test_to_pairs():
     class Duck(object):
 
         def keys(self):
-            return dict(wanted).keys()
+            return list(dict(wanted).keys())
 
         def __getitem__(self, key):
             return dict(wanted)[key]
@@ -121,7 +121,7 @@ def test_keyslice_rename():
     wanted = [('d', 1), ('c', 2), ('b', 3),
               ('a', 4), ('a', 4), ('a', 5)]
 
-    yield _keyslice_eq_, wanted, dict(rename=zip('abcddd', 'dcbaaa'))
+    yield _keyslice_eq_, wanted, dict(rename=list(zip('abcddd', 'dcbaaa')))
 
 
 def test_keyslice_key():
@@ -159,7 +159,7 @@ def test_symbols():
 def test_symbol_pickle():
     import pickle
     try:
-        import cPickle
+        import pickle
     except ImportError:
         cPickle = pickle
 

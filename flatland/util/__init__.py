@@ -1,5 +1,5 @@
 """Utilities."""
-from base import Maybe, Unspecified, adict, as_mapping,\
+from .base import Maybe, Unspecified, adict, as_mapping,\
         assignable_class_property, assignable_property,\
         autodocument_from_superclasses, class_cloner,\
         keyslice_pairs, lazy_property, luhn10,\

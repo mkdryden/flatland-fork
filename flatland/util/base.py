@@ -26,7 +26,7 @@ class lazy_property(object):
         if obj is None:
             return self
         value = self._deferred(obj)
-        setattr(obj, self._deferred.func_name, value)
+        setattr(obj, self._deferred.__name__, value)
         return value
 
 
@@ -163,14 +163,14 @@ class as_mapping(object):
 
     def __getitem__(self, item):
         try:
-            if isinstance(item, unicode):
+            if isinstance(item, str):
                 return getattr(self.target, item.encode('ascii'))
             return getattr(self.target, item)
         except (AttributeError, UnicodeError):
             raise KeyError(item)
 
     def __contains__(self, item):
-        if isinstance(item, unicode):
+        if isinstance(item, str):
             try:
                 return hasattr(self.target, item.encode('ascii'))
             except UnicodeError:
@@ -197,7 +197,7 @@ def re_ucompile(pattern, flags=0):
 
 
 #_alphanum = set((string.digits + string.letters).decode('ascii'))
-_alphanum = set(('0123456789' + 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ').decode('ascii'))
+_alphanum = set(('0123456789' + 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'))
 
 
 def re_uescape(pattern):
@@ -205,11 +205,11 @@ def re_uescape(pattern):
     mutable = list(pattern)
     for idx, char in enumerate(pattern):
         if char not in _alphanum:
-            if char == u"\000":
-                mutable[idx] = u"\\000"
+            if char == "\000":
+                mutable[idx] = "\\000"
             else:
-                mutable[idx] = u"\\" + char
-    return u''.join(mutable)
+                mutable[idx] = "\\" + char
+    return ''.join(mutable)
 
 
 def luhn10(number):
@@ -234,11 +234,11 @@ def to_pairs(dictlike):
 
     """
     if hasattr(dictlike, 'iteritems'):
-        return dictlike.iteritems()
+        return iter(dictlike.items())
     elif hasattr(dictlike, 'keys'):
-        return ((key, dictlike[key]) for key in dictlike.keys())
+        return ((key, dictlike[key]) for key in list(dictlike.keys()))
     elif hasattr(dictlike, '_asdict'): # namedtuple interface
-        return dictlike._asdict().iteritems()
+        return iter(dictlike._asdict().items())
     else:
         return ((key, value) for key, value in dictlike)
 
@@ -337,7 +337,7 @@ class Maybe(object):
         else:
             raise TypeError(type(other).__name__)
 
-    def __nonzero__(self):
+    def __bool__(self):
         raise NotImplementedError()
 
     def __str__(self):
@@ -362,7 +362,7 @@ def autodocument_from_superclasses(cls):
     Can be used as a class decorator.
     """
     undocumented = []
-    for name, attribute in cls.__dict__.items():
+    for name, attribute in list(cls.__dict__.items()):
         # is it a method on the class that is locally undocumented?
         if hasattr(attribute, '__call__') and not attribute.__doc__:
             # don't muck with builtins

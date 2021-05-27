@@ -1,9 +1,9 @@
 # -*- coding: utf-8; fill-column: 78 -*-
 """Network address and URL validation."""
 import re
-import urlparse
+import urllib.parse as urlparse
 
-from base import N_, Validator
+from .base import N_, Validator
 
 
 class IsEmail(Validator):
@@ -25,7 +25,7 @@ class IsEmail(Validator):
 
     **Attributes**
 
-    .. attribute:: nonlocal
+    .. attribute:: non_local
 
       Default ``True``.  When true, require at minimum two domain name
       components and reject local email addresses such as
@@ -55,9 +55,9 @@ class IsEmail(Validator):
 
     """
 
-    invalid = N_(u'%(label)s is not a valid email address.')
+    invalid = N_('%(label)s is not a valid email address.')
 
-    nonlocal = True
+    non_local = True
 
     local_part_pattern = None
 
@@ -66,10 +66,10 @@ class IsEmail(Validator):
 
     def validate(self, element, state):
         addr = element.u
-        if addr.count(u'@') != 1:
+        if addr.count('@') != 1:
             return self.note_error(element, state, 'invalid')
 
-        local_part, domain = addr.split(u'@')
+        local_part, domain = addr.split('@')
         if not local_part or local_part.isspace():
             return self.note_error(element, state, 'invalid')
 
@@ -91,7 +91,7 @@ class IsEmail(Validator):
             return self.note_error(element, state, 'invalid')
 
         labels = domain.split('.')
-        if len(labels) == 1 and self.nonlocal:
+        if len(labels) == 1 and self.non_local:
             return self.note_error(element, state, 'invalid')
 
         if not all(len(label) < 64 for label in labels):
@@ -169,7 +169,7 @@ class URLValidator(Validator):
             return self.note_error(element, state, 'bad_format')
 
         scheme_name = url.scheme
-        if scheme_name == u'':
+        if scheme_name == '':
             return self.note_error(element, state, 'blocked_scheme')
         elif self.allowed_schemes != ('*',):
             if scheme_name not in self.allowed_schemes:
@@ -238,9 +238,9 @@ class HTTPURLValidator(Validator):
 
     """
 
-    bad_format = N_(u'%(label)s is not a valid URL.')
-    required_part = N_(u'%(label)s is not a valid URL.')
-    forbidden_part = N_(u'%(label)s is not a valid URL.')
+    bad_format = N_('%(label)s is not a valid URL.')
+    required_part = N_('%(label)s is not a valid URL.')
+    forbidden_part = N_('%(label)s is not a valid URL.')
 
     all_parts = ('scheme', 'username', 'password', 'hostname', 'port',
                  'path', 'params', 'query', 'fragment')
@@ -309,7 +309,7 @@ class URLCanonicalizer(Validator):
 
     """
 
-    bad_format = N_(u'%(label)s is not a valid URL.')
+    bad_format = N_('%(label)s is not a valid URL.')
 
     discard_parts = 'fragment',
     urlparse = urlparse

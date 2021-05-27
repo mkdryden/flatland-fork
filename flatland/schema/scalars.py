@@ -74,20 +74,20 @@ class Scalar(Element):
         except AdaptationError:
             self.value = None
             if value is None:
-                self.u = u''
-            elif isinstance(value, unicode):
+                self.u = ''
+            elif isinstance(value, str):
                 self.u = value
             else:
                 try:
-                    self.u = unicode(value)
+                    self.u = str(value)
                 except UnicodeDecodeError:
-                    self.u = unicode(value, errors='replace')
+                    self.u = str(value, errors='replace')
             return False
 
         # stringify it, possibly storing what we received verbatim or a
         # normalized version of it.
         if value is None:
-            self.u = u''
+            self.u = ''
         else:
             self.u = self.serialize(value)
         return True
@@ -114,7 +114,7 @@ class Scalar(Element):
         implementation returns ``unicode(value)``.
 
         """
-        return unicode(value)
+        return str(value)
 
     def _index(self, name):
         raise IndexError(name)
@@ -130,7 +130,7 @@ class Scalar(Element):
         if default is not Unspecified:
             self.set(default)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True if self.u and self.value else False
 
     def __unicode__(self):
@@ -175,9 +175,9 @@ class String(Scalar):
         if value is None:
             return None
         elif self.strip:
-            return unicode(value).strip()
+            return str(value).strip()
         else:
-            return unicode(value)
+            return str(value)
 
     def serialize(self, value):
         """Return a Unicode representation.
@@ -189,16 +189,16 @@ class String(Scalar):
 
         """
         if value is None:
-            return u''
+            return ''
         elif self.strip:
-            return unicode(value).strip()
+            return str(value).strip()
         else:
-            return unicode(value)
+            return str(value)
 
     @property
     def is_empty(self):
         """True if the String is missing or has no value."""
-        return True if (not self.value and self.u == u'') else False
+        return True if (not self.value and self.u == '') else False
 
 
 class Number(Scalar):
@@ -215,7 +215,7 @@ class Number(Scalar):
     signed = True
     """If true, allow negative numbers.  Default ``True``."""
 
-    format = u'%s'
+    format = '%s'
     """The ``unicode`` serialization format."""
 
     def adapt(self, value):
@@ -228,7 +228,7 @@ class Number(Scalar):
         """
         if value is None:
             return None
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             value = value.strip()  # decimal.Decimal doesn't like whitespace
         try:
             native = self.type_(value)
@@ -253,7 +253,7 @@ class Number(Scalar):
         """
         if type(value) is self.type_:
             return self.format % value
-        return unicode(value)
+        return str(value)
 
 
 class Integer(Number):
@@ -262,17 +262,17 @@ class Integer(Number):
     type_ = int
     """``int``"""
 
-    format = u'%i'
+    format = '%i'
     """``u'%i'``"""
 
 
 class Long(Number):
     """Element type for Python's long."""
 
-    type_ = long
+    type_ = int
     """``long``"""
 
-    format = u'%i'
+    format = '%i'
     """``u'%i'``"""
 
 class Float(Number):
@@ -281,7 +281,7 @@ class Float(Number):
     type_ = float
     """``float``"""
 
-    format = u'%f'
+    format = '%f'
     """``u'%f'``"""
 
 
@@ -291,26 +291,26 @@ class Decimal(Number):
     type_ = decimal.Decimal
     """``decimal.Decimal``"""
 
-    format = u'%f'
+    format = '%f'
     """``u'%f'``"""
 
 
 class Boolean(Scalar):
     """Element type for Python's ``bool``."""
 
-    true = u'1'
+    true = '1'
     """The ``unicode`` serialization for ``True``: ``u'1'``."""
 
-    true_synonyms = (u'on', u'true', u'True', u'1')
+    true_synonyms = ('on', 'true', 'True', '1')
     """A sequence of acceptable string equivalents for True.
 
     Defaults to ``(u'on', u'true', u'True', u'1')``
     """
 
-    false = u''
+    false = ''
     """The ``unicode`` serialization for ``False``: ``u''``."""
 
-    false_synonyms = (u'off', u'false', u'False', u'0', u'')
+    false_synonyms = ('off', 'false', 'False', '0', '')
     """A sequence of acceptable string equivalents for False.
 
     Defaults to ``(u'off', u'false', u'False', u'0', u'')``
@@ -328,7 +328,7 @@ class Boolean(Scalar):
         For non-string values, equivalent to ``bool(value)``.
 
         """
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return bool(value)
         elif value == self.true or value in self.true_synonyms:
             return True
@@ -471,7 +471,7 @@ class Temporal(Scalar):
             return value
         elif isinstance(value, self.type_):
             return value
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             if self.strip:
                 value = value.strip()
             match = self.regex.match(value)
@@ -495,7 +495,7 @@ class Temporal(Scalar):
         if isinstance(value, self.type_):
             return self.format % as_mapping(value)
         else:
-            return unicode(value)
+            return str(value)
 
 
 class DateTime(Temporal):
@@ -507,11 +507,11 @@ class DateTime(Temporal):
 
     type_ = datetime.datetime
     regex = re.compile(
-        ur'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}) '
-        ur'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$')
-    format = (u'%(year)04i-%(month)02i-%(day)02i '
-              u'%(hour)02i:%(minute)02i:%(second)02i')
-    used = (u'year', u'month', u'day', u'hour', u'minute', u'second')
+        r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}) '
+        r'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$')
+    format = ('%(year)04i-%(month)02i-%(day)02i '
+              '%(hour)02i:%(minute)02i:%(second)02i')
+    used = ('year', 'month', 'day', 'hour', 'minute', 'second')
 
 
 class Date(Temporal):
@@ -523,9 +523,9 @@ class Date(Temporal):
 
     type_ = datetime.date
     regex = re.compile(
-        ur'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$')
-    format = u'%(year)04i-%(month)02i-%(day)02i'
-    used = (u'year', u'month', u'day')
+        r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})$')
+    format = '%(year)04i-%(month)02i-%(day)02i'
+    used = ('year', 'month', 'day')
 
 
 class Time(Temporal):
@@ -537,9 +537,9 @@ class Time(Temporal):
 
     type_ = datetime.time
     regex = re.compile(
-        ur'^(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$')
-    format = u'%(hour)02i:%(minute)02i:%(second)02i'
-    used = (u'hour', u'minute', u'second')
+        r'^(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$')
+    format = '%(hour)02i:%(minute)02i:%(second)02i'
+    used = ('hour', 'minute', 'second')
 
 
 class Ref(Scalar):
@@ -548,7 +548,7 @@ class Ref(Scalar):
     #######################################################################
     writable = 'ignore'
 
-    sep = u'.'
+    sep = '.'
 
     target_path = None
 
@@ -583,7 +583,7 @@ class Ref(Scalar):
         elif self.writable:
             self.target.u = ustr
         else:
-            raise TypeError(u'Ref "%s" is not writable.' % self.name)
+            raise TypeError('Ref "%s" is not writable.' % self.name)
 
     u = property(_get_u, _set_u)
     del _get_u, _set_u
@@ -598,7 +598,7 @@ class Ref(Scalar):
         elif self.writable:
             self.target.value = value
         else:
-            raise TypeError(u'Ref "%s" is not writable.' % self.name)
+            raise TypeError('Ref "%s" is not writable.' % self.name)
 
     value = property(_get_value, _set_value)
     del _get_value, _set_value

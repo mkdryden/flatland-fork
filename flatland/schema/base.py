@@ -111,7 +111,7 @@ class Element(_BaseElement):
     raw = Unset
     """The element's raw, unadapted value from input."""
 
-    u = u''
+    u = ''
     """A Unicode representation of the element's value.
 
     As in :attr:`value`, writing directly to this attribute should be
@@ -138,7 +138,7 @@ class Element(_BaseElement):
         if 'validators' in kw:
             kw['validators'] = list(kw['validators'])
 
-        for attribute, override in kw.items():
+        for attribute, override in list(kw.items()):
             if hasattr(self, attribute):
                 setattr(self, attribute, override)
             else:
@@ -159,8 +159,8 @@ class Element(_BaseElement):
         :returns: a new class
 
         """
-        if not isinstance(name, (unicode, NoneType)):
-            name = unicode(name)
+        if not isinstance(name, (str, NoneType)):
+            name = str(name)
         cls.name = name
         return cls
 
@@ -181,7 +181,7 @@ class Element(_BaseElement):
             if not isinstance(overrides['properties'], Properties):
                 overrides['properties'] = Properties(overrides['properties'])
 
-        for attribute, value in overrides.iteritems():
+        for attribute, value in overrides.items():
             # TODO: must make better
             if callable(value):
                 value = staticmethod(value)
@@ -416,7 +416,7 @@ class Element(_BaseElement):
             yield element
             queue.extend(element.children)
 
-    def fq_name(self, sep=u'.'):
+    def fq_name(self, sep='.'):
         """Return the fully qualified path name of the element.
 
         Returns a *sep*-separated string of :meth:`.el` compatible element
@@ -534,7 +534,7 @@ class Element(_BaseElement):
         else:
             return results[0]
 
-    def el(self, path, sep=u'.'):
+    def el(self, path, sep='.'):
         """Find a child element by string path.
 
         :param path: a *sep*-separated string of element names, or an
@@ -594,7 +594,7 @@ class Element(_BaseElement):
 
     @classmethod
     def _parse_element_path(self, path, sep):
-        if isinstance(path, basestring):
+        if isinstance(path, str):
             if path == sep:
                 return [Root]
             elif path.startswith(sep):
@@ -623,7 +623,7 @@ class Element(_BaseElement):
         if message not in self.warnings:
             self.warnings.append(message)
 
-    def flattened_name(self, sep=u'_'):
+    def flattened_name(self, sep='_'):
         """Return the element's complete flattened name as a string.
 
         Joins this element's :attr:`path` with *sep* and returns the fully
@@ -647,7 +647,7 @@ class Element(_BaseElement):
                         for parent in self.path
                         if parent.name is not None)
 
-    def flatten(self, sep=u'_', value=operator.attrgetter('u')):
+    def flatten(self, sep='_', value=operator.attrgetter('u')):
         """Export an element hierarchy as a flat sequence of key, value pairs.
 
         :arg sep: a string, will join together element names.
@@ -739,7 +739,7 @@ class Element(_BaseElement):
         """
         raise NotImplementedError()
 
-    def set_flat(self, pairs, sep=u'_'):
+    def set_flat(self, pairs, sep='_'):
         """Set element values from pairs, expanding the element tree as needed.
 
         Given a sequence of name/value tuples or a dict, build out a
@@ -748,7 +748,7 @@ class Element(_BaseElement):
         """
         self.raw = Unset
         if hasattr(pairs, 'items'):
-            pairs = pairs.items()
+            pairs = list(pairs.items())
 
         return self._set_flat(pairs, sep)
 
@@ -762,7 +762,7 @@ class Element(_BaseElement):
     @property
     def is_empty(self):
         """True if the element has no value."""
-        return True if (self.value is None and self.u == u'') else False
+        return True if (self.value is None and self.u == '') else False
 
     def validate(self, state=None, recurse=True):
         """Assess the validity of this element and its children.

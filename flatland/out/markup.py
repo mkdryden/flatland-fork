@@ -4,8 +4,8 @@ from flatland.out.generic import Context, transform, _unpack
 from flatland.out.util import parse_trool
 
 
-_default_settings = {u'ordered_attributes': True}
-_static_attribute_order = [u'type', u'name', u'value']
+_default_settings = {'ordered_attributes': True}
+_static_attribute_order = ['type', 'name', 'value']
 
 
 class Generator(Context):
@@ -44,7 +44,7 @@ class Generator(Context):
 
         """
         self.push(**settings)
-        return self['markup_wrapper'](u'')
+        return self['markup_wrapper']('')
 
     def end(self):
         """End a :ref:`markupsettings` context.
@@ -55,7 +55,7 @@ class Generator(Context):
         if len(self._frames) == 2:
             raise RuntimeError("end() without matching begin()")
         self.pop()
-        return self['markup_wrapper'](u'')
+        return self['markup_wrapper']('')
 
     def set(self, **settings):
         """Change the :ref:`markupsettings` in effect.
@@ -66,14 +66,14 @@ class Generator(Context):
 
         """
 
-        for key, value in settings.items():
+        for key, value in list(settings.items()):
             if key not in self:
                 raise TypeError(
                     "%r is not a valid argument." % key)
             if key.startswith('auto_'):
                 value = parse_trool(value)
             self[key] = value
-        return self['markup_wrapper'](u'')
+        return self['markup_wrapper']('')
 
     @property
     def form(self):
@@ -86,7 +86,7 @@ class Generator(Context):
         If provided with a bind, form tags can generate the *name* attribute.
 
         """
-        return self._tag(u'form', False, True)
+        return self._tag('form', False, True)
 
     @property
     def input(self):
@@ -100,7 +100,7 @@ class Generator(Context):
         and *id* attributes.  Input tags support *tabindex* attributes.
 
         """
-        return self._tag(u'input', True)
+        return self._tag('input', True)
 
     @property
     def textarea(self):
@@ -117,7 +117,7 @@ class Generator(Context):
         :meth:`~Tag.open` and :meth:`~Tag.close` method of the returned tag.
 
         """
-        return self._tag(u'textarea', False, True)
+        return self._tag('textarea', False, True)
 
     @property
     def button(self):
@@ -131,7 +131,7 @@ class Generator(Context):
         and *id* attributes.  Button tags support *tabindex* attributes.
 
         """
-        return self._tag(u'button')
+        return self._tag('button')
 
     @property
     def select(self):
@@ -145,7 +145,7 @@ class Generator(Context):
         attributes.  Select tags support *tabindex* attributes.
 
         """
-        return self._tag(u'select', False, True)
+        return self._tag('select', False, True)
 
     @property
     def option(self):
@@ -164,7 +164,7 @@ class Generator(Context):
            print generator.option.close()
 
         """
-        return self._tag(u'option', False, True)
+        return self._tag('option', False, True)
 
     @property
     def label(self):
@@ -179,7 +179,7 @@ class Generator(Context):
         :attr:`~flatland.Element.label`, if present.
 
         """
-        return self._tag(u'label')
+        return self._tag('label')
 
     def tag(self, tagname, bind=None, **attributes):
         """Generate any tag.
@@ -194,7 +194,7 @@ class Generator(Context):
 
         """
         if isinstance(tagname, str):  # pragma: nocover
-            tagname = unicode(tagname)
+            tagname = str(tagname)
         tagname = tagname.lower()
         if bind is None and not attributes:
             return self._tag(tagname)
@@ -243,7 +243,7 @@ class Tag(object):
         """
         if self not in self._context._tags[self.tagname]:
             self._context._tags[self.tagname].append(self)
-        return self._markup(self._open(bind, attributes) + u'>')
+        return self._markup(self._open(bind, attributes) + '>')
 
     def close(self):
         """Return the closing half of the tag, e.g. </p>."""
@@ -262,24 +262,24 @@ class Tag(object):
             tagname, attributes, contents, self._context, bind)
 
         if not new_contents:
-            new_contents = u''
+            new_contents = ''
         elif hasattr(new_contents, '__html__'):
             new_contents = _unpack(new_contents)
         self.contents = self._markup(new_contents)
 
         if self._context['ordered_attributes']:
-            pairs = sorted(attributes.items(), key=_attribute_sort_key)
+            pairs = sorted(list(attributes.items()), key=_attribute_sort_key)
         else:
-            pairs = attributes.iteritems()
-        guts = u' '.join(u'%s="%s"' % (k, _attribute_escape(v))
+            pairs = iter(attributes.items())
+        guts = ' '.join('%s="%s"' % (k, _attribute_escape(v))
                          for k, v in pairs)
         if guts:
-            return u'<' + tagname + u' ' + guts
+            return '<' + tagname + ' ' + guts
         else:
-            return u'<' + tagname
+            return '<' + tagname
 
     def _close(self):
-        return u'</' + self.tagname + u'>'
+        return '</' + self.tagname + '>'
 
     def _markup(self, string):
         return self._context['markup_wrapper'](string)
@@ -291,12 +291,12 @@ class Tag(object):
         if not contents:
             if not self._always_paired:
                 if self._context.xml:
-                    return self._markup(header + u' />')
+                    return self._markup(header + ' />')
                 elif self._html_dangle:
-                    return self._markup(header + u'>')
+                    return self._markup(header + '>')
         if hasattr(contents, '__html__'):
             contents = _unpack(contents)
-        return self._markup(header + u'>' + contents + self._close())
+        return self._markup(header + '>' + contents + self._close())
 
     def __html__(self):
         return self()
@@ -304,20 +304,20 @@ class Tag(object):
 
 def _attribute_escape(string):
     if not string:
-        return u''
+        return ''
     elif hasattr(string, '__html__'):
         return _unpack(string)
     else:
         return string. \
-               replace(u'&', u'&amp;'). \
-               replace(u'<', u'&lt;'). \
-               replace(u'>', u'&gt;'). \
-               replace(u'"', u'&quot;')
+               replace('&', '&amp;'). \
+               replace('<', '&lt;'). \
+               replace('>', '&gt;'). \
+               replace('"', '&quot;')
 
 
 def _unicode_keyed(bytestring_keyed):
     rekeyed = {}
-    for key, value in bytestring_keyed.items():
+    for key, value in list(bytestring_keyed.items()):
         as_unicode = key.rstrip('_').decode('ascii')
         rekeyed[as_unicode] = value
     return rekeyed

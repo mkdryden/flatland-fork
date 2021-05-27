@@ -31,8 +31,8 @@ class CreditCardNumber(Long):
     def adapt(self, value):
         if value is None:
             return None
-        elif isinstance(value, (int, long)):
-            return long(value)
+        elif isinstance(value, int):
+            return int(value)
 
         value = _from_string(value)
 
@@ -43,11 +43,11 @@ class CreditCardNumber(Long):
 
     def serialize(self, value):
         if value is None:
-            return u''
-        elif isinstance(value, long):
+            return ''
+        elif isinstance(value, int):
             return _pretty_print(value)
         else:
-            return unicode(value)
+            return str(value)
 
     Present = Present
 
@@ -66,7 +66,7 @@ class CreditCardNumber(Long):
             else:
                 types = accepted[0][0]
 
-            return u'We accept %s' % types
+            return 'We accept %s' % types
 
         not_accepted = _formatter
 
@@ -83,7 +83,7 @@ _re_amex = re.compile(r'^3[47]\d{13}$')
 _re_disc = re.compile(r'^6011\d{12}$')
 
 def _card_type(number):
-    assert isinstance(number, (int, long))
+    assert isinstance(number, int)
 
     as_str = str(number)
 
@@ -104,27 +104,27 @@ _re_filler = re.compile(r'^[0-9\s-]{15,}$')
 def _from_string(number):
     if number is None:
         return None
-    elif isinstance(number, (int, long)):
-        return long(number)
-    elif not isinstance(number, basestring):
+    elif isinstance(number, int):
+        return int(number)
+    elif not isinstance(number, str):
         return None
 
     if not _re_filler.match(number):
         return None
 
-    return long(_re_strip.sub(u'', unicode(number)))
+    return int(_re_strip.sub('', str(number)))
 
 def _pretty_print(number):
     if number is None:
-        return u''
+        return ''
 
-    s = unicode(number)
+    s = str(number)
 
     if len(s) == 16:
-        return u'%s-%s-%s-%s' % (s[0:4], s[4:8], s[8:12], s[12:16])
+        return '%s-%s-%s-%s' % (s[0:4], s[4:8], s[8:12], s[12:16])
     elif len(s) == 15:
-        return u'%s-%s-%s' % (s[0:4], s[4:10], s[10:15])
+        return '%s-%s-%s' % (s[0:4], s[4:10], s[10:15])
     elif len(s) == 13:
-        return u'%s-%s-%s-%s' % (s[0:4], s[4:7], s[7:10], s[10:13])
+        return '%s-%s-%s-%s' % (s[0:4], s[4:7], s[7:10], s[10:13])
     else:
         return s

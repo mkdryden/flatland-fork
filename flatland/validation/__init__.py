@@ -1,6 +1,6 @@
 """Data validation tools."""
-from base import Validator, as_format_mapping
-from scalars import (
+from .base import Validator, as_format_mapping
+from .scalars import (
     Converted,
     IsFalse,
     IsTrue,
@@ -19,21 +19,21 @@ from scalars import (
     ValueLessThan,
     ValuesEqual,
     )
-from containers import (
+from .containers import (
     HasAtLeast,
     HasAtMost,
     HasBetween,
     NotDuplicated,
     )
-from network import (
+from .network import (
     HTTPURLValidator,
     IsEmail,
     URLCanonicalizer,
     URLValidator,
     )
-from number import (
+from .number import (
     Luhn10,
     )
-from string import (
+from .string import (
     NANPphone,
     )

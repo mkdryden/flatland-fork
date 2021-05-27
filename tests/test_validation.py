@@ -13,14 +13,14 @@ from flatland.validation import (
 class Age(Integer):
 
     class IsNumber(Converted):
-        incorrect = u'%(label)s is not a valid number.'
+        incorrect = '%(label)s is not a valid number.'
 
     class ValidAge(Validator):
         minage = 1
         maxage = 150
 
-        too_young = u'%(label)s must be at least %(minage)s.'
-        too_old = u'%(label)s may not be larger than %(maxage)s'
+        too_young = '%(label)s must be at least %(minage)s.'
+        too_old = '%(label)s may not be larger than %(maxage)s'
 
         at_min = '%(label)s is at the minimum age.'
         at_max = '%(label)s is at the maximum age.'
@@ -57,15 +57,15 @@ def test_custom_validation():
     assert not f.validate()
     assert f['age'].errors == ['age may not be blank.']
 
-    f = MyForm.from_flat({u'age': u''})
+    f = MyForm.from_flat({'age': ''})
     assert not f.validate()
     assert f['age'].errors == ['age may not be blank.']
 
-    f = MyForm.from_flat({u'age': u'crunch'})
+    f = MyForm.from_flat({'age': 'crunch'})
     assert not f.validate()
     assert f['age'].errors == ['age is not a valid number.']
 
-    f = MyForm.from_flat({u'age': u'10'})
+    f = MyForm.from_flat({'age': '10'})
     assert not f.validate()
     assert f['age'].errors == ['age must be at least 30.']
 
@@ -78,7 +78,7 @@ def test_child_validation():
     form = MyForm()
     assert not form.validate()
 
-    form.set({u'x': 10})
+    form.set({'x': 10})
     assert form.validate()
 
 

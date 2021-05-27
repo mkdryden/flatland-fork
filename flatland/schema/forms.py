@@ -37,7 +37,7 @@ class _MetaForm(type):
 
         # add / replace fields declared as attributes on this class
         declared_fields = []
-        for name, value in members.items():
+        for name, value in list(members.items()):
             # TODO warn about instances found here?
             if isinstance(value, type) and issubclass(value, Element):
                 if name != value.name:
@@ -78,7 +78,7 @@ class _ElementCollection(object):
             self.elements.append(field)
 
 
-class Form(Dict):
+class Form(Dict, metaclass=_MetaForm):
     """A declarative collection of named fields.
 
     Forms behave like :class:`flatland.Dict`, but are defined with Python
@@ -140,8 +140,6 @@ class Form(Dict):
     The order of ``field_schema`` after construction is undefined.
 
     """
-
-    __metaclass__ = _MetaForm
 
     # TODO:
     #   some kind of validator merging helper?  or punt?

@@ -13,7 +13,7 @@ def test_from_object():
     class Obj(object):
 
         def __init__(self, **kw):
-            for (k, v) in kw.items():
+            for (k, v) in list(kw.items()):
                 setattr(self, k, v)
 
     class Schema(Form):
@@ -80,13 +80,13 @@ def test_inheritance_straight():
         base_member = String
 
     assert len(Base.field_schema) == 1
-    assert Base().keys() == ['base_member']
+    assert list(Base().keys()) == ['base_member']
 
     class Sub(Base):
         added_member = String
 
     assert len(Base.field_schema) == 1
-    assert Base().keys() == ['base_member']
+    assert list(Base().keys()) == ['base_member']
 
     assert len(Sub.field_schema) == 2
     assert set(Sub().keys()) == set(['base_member', 'added_member'])
